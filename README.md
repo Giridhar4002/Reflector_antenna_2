@@ -1,190 +1,188 @@
-# 📡 CICAD 2025 — Phased Array Antenna Design & Analysis Tool
+---
+title: CICAD 2025 Reflector Antenna Problem-2 - Design and Analysis Tool
+emoji: 📡
+colorFrom: blue
+colorTo: indigo
+sdk: streamlit
+sdk_version: 1.43.2
+app_file: app.py
+pinned: false
+---
 
-> **Assignment Problem 2:** Design a hexagonal-grid phased array antenna at 44.5 GHz ± 1 GHz with Potter horn elements, circular aperture, 10 dB amplitude taper, ±9° scan, and 40 dBi minimum gain.
+# 📡 CICAD 2025 — Reflector Antenna Problem-2: Design and Analysis Tool
+
+## Overview
+
+This Streamlit application provides a **complete analytical solution** to **Reflector Antenna Problem-2** from the CICAD 2025 Assignment (Jan 31, 2026, submission due Feb 28, 2026). The tool solves all six parts (a–f) of the problem using Gaussian beam analysis and the design equations from the reference literature.
+
+### Problem Statement
+
+> **Given:** A center-fed reflector with 2.5 m diameter and f/D ratio of 0.9. Operating frequency = 12 GHz. The reflector is fed using a 2×2 element patch antenna array with element spacing of 0.5λ. Assume patch antenna efficiency of 90%.
 
 ---
 
-## 🎯 Overview
+## Problem Parts Solved
 
-This Streamlit application solves the CICAD 2025 Phased Array Problem 2 end-to-end. It implements the closed-form design equations from:
+### Part (a) — Reflector & Feed Configuration Sketch
+- Generates a dimensioned sketch of the center-fed parabolic reflector
+- Labels all key parameters: D, F, f/D, θ₀ (half-angle subtended at feed)
+- Shows the 2×2 patch array feed positioned at the focal point
 
-- **S. K. Rao & C. Ostroot**, *"Design Principles and Guidelines for Phased Array and Reflector Antennas,"* IEEE Antennas & Propagation Magazine, April 2020.
-- **S. Kotta & G. Gupta**, *"Phased Array Antenna Design and Analysis Tool,"* IEEE WAMS 2023.
+### Part (b) — Feed Array Directivity, 3dB Beamwidth & Illumination Taper
+- Computes feed array directivity using: `D_array = 10·log₁₀[N · η_e · 4π(d/λ)²]`
+- Calculates feed 3dB beamwidth: `θ₃dB = A · (λ / L)` where L = Nx × d
+- Determines illumination taper at reflector edges: `T = 3·(θ₀/θ₃dB)²`
+- Plots the feed radiation pattern using sinc function for rectangular aperture
 
-The tool calculates element spacing, element gain, number of elements, array layout, and radiation patterns — all interactively via a browser UI.
+### Part (c) — Reflector Peak Directivity & 3dB Beamwidth
+- Computes the cos^n model parameter: `n = -0.05T / log₁₀[cos(θ₀/2)]`
+- Calculates aperture efficiency: `η_f = 4·cot²(θ₀/2)·[1-cos^n(θ₀/2)]²·(n+1)/n²`
+- Peak directivity: `D_peak = 10·log₁₀[(πD/λ)² · η_f]`
+- Secondary beam 3dB beamwidth: `θ₃ = (0.762T + 58.44)·λ/D`
+- Plots efficiency vs. taper curves and directivity vs. diameter parametric curves
 
----
+### Part (d) — Aperture Efficiency
+- Reports the computed aperture efficiency from Part (c)
+- Analyzes whether the illumination taper is in the optimal 10–12 dB range
+- Discusses efficiency optimization strategies
 
-## 📋 Problem Statement
+### Part (e) — Secondary Beam Pattern & Sidelobe Reduction
+- Plots the reflector secondary radiation pattern using the piecewise Gaussian model:
+  - Main beam region: `g(θ) = -3·(2θ/θ₃)² dB`
+  - Sidelobe plateau: `g(θ) = SLL`
+  - Sidelobe roll-off: `g(θ) = SLL - 25·log(θ / 1.5·θ_SLL)`
+- Computes first sidelobe level: `SLL = -0.037T² - 0.376T - 17.6 dB`
+- Provides two specific suggestions to reduce sidelobe levels:
+  1. Increase illumination taper by adjusting feed parameters
+  2. Apply amplitude taper across the array feed elements
 
-| Parameter | Value |
-|---|---|
-| Centre frequency | 44.5 GHz |
-| Bandwidth | ±1.0 GHz (43.5–45.5 GHz) |
-| Grid | Hexagonal |
-| Aperture shape | Close to circular |
-| Feed element | Potter horn |
-| Scan region | ±9 degrees |
-| Minimum gain over coverage | 40 dBi |
-| Amplitude taper | 10 dB across the array |
-| Horn aperture efficiency | 70% |
-
-### Sub-problems
-
-| Part | Task |
-|---|---|
-| **A** | Calculate the required array peak directivity |
-| **B** | Calculate element spacing, element gain, and number of elements |
-| **C** | Plot the array layout and radiation patterns |
-| **D** | Analyse complexity reduction when scan angle is reduced to ±6° |
-
----
-
-## 🔬 Key Equations Implemented
-
-### Hexagonal Lattice Element Spacing — Eq. (2)
-
-```
-d_h / λ_h ≤ 1.1547 / (sin θ_sm + sin θ_G)
-```
-
-where `λ_h` is wavelength at the highest frequency (worst-case grating lobes), `θ_sm` is the maximum scan angle, and `θ_G` is the grating-lobe placement angle.
-
-### Required Peak Directivity — Eq. (5)
-
-```
-D_p = G_min + L_s + SL + GL_pe + T_L + X + I_m
-```
-
-All terms in dB. `SL` is scan loss, `T_L` is taper loss, `I_m` is implementation margin.
-
-### Number of Elements — Eq. (4)
-
-```
-N = 10^(0.1·D_p − 0.1·D_e)
-```
-
-### Array Peak Directivity — Eq. (3)
-
-```
-D_p = 10·log₁₀(N) + 10·log₁₀[η_e · 4π·A_e / λ_l²]
-```
-
-### Scan Loss (Directive Elements, d/λ > 1) — Eq. (6)
-
-```
-SL = 3·(θ_sm / (0.5·θ_3))²
-```
-
-### Taper Efficiency — Eq. (10)
-
-```
-η = 75·(1+T)² / (1+T+T²)   [%]
-```
-
-where `T = 10^(−taper_dB/20)`.
+### Part (f) — Comparison: 0.5λ vs 0.7λ Element Spacing
+- Recomputes all parameters with d = 0.7λ
+- Generates a side-by-side comparison table
+- Plots the new secondary beam pattern
+- Provides detailed analysis of how each performance marker changes:
+  - Feed directivity, feed beamwidth, illumination taper
+  - Reflector efficiency, peak directivity, secondary beamwidth, sidelobe levels
 
 ---
 
-## 🖥️ Application Structure
+## Key Equations Used
 
-```
-├── app.py              # Main Streamlit application
-├── requirements.txt    # Python dependencies
-├── .gitattributes      # Git LFS configuration
-└── README.md           # This file
-```
+All equations are sourced from:
 
-### UI Layout
+1. **Element Spacing & Array Directivity** (Ref [1], Eq. 3):
+   ```
+   D_p = 10·log₁₀(N) + 10·log₁₀[η_e · 4πA_e / λ²]
+   ```
 
-- **Sidebar**: All input parameters (frequency, scan angle, gain, taper, efficiency, losses)
-- **Tab A**: Peak directivity calculation with full loss budget
-- **Tab B**: Element spacing, element gain, number of elements, grating-lobe analysis
-- **Tab C**: Interactive array layout plot + radiation patterns (φ = 0° cut)
-- **Tab D**: Side-by-side comparison at reduced scan angle (default ±6°)
-- **Tab Ref**: Equations reference card
+2. **Illumination Taper** (Gaussian beam model, Ref [2], Eq. 4):
+   ```
+   T = 10·log₁₀·e^(-A·(θ₀/θ_b)²)  →  simplified as T = 3·(θ₀/θ₃dB)²
+   ```
+
+3. **Reflector Efficiency** (Ref [1], Eq. 15):
+   ```
+   η_f = 4·cot²(θ₀/2)·[1 - cos^n(θ₀/2)]²·(n+1)/n²
+   ```
+
+4. **Peak Directivity** (Ref [1], Eq. 14):
+   ```
+   D_peak = 10·log₁₀[(4πA/λ²)·η_f]
+   ```
+
+5. **3dB Beamwidth** (Ref [1], Eq. 17):
+   ```
+   θ₃ = (0.762T + 58.44)·λ/D
+   ```
+
+6. **Sidelobe Level** (Ref [2], Eq. 7):
+   ```
+   SLL = -0.037T² - 0.376T - 17.6 dB
+   ```
+
+7. **Center-fed geometry**:
+   ```
+   θ₀ = 2·arctan(D / 4F)
+   ```
 
 ---
 
-## 🚀 Running Locally
+## How to Run
 
-### Prerequisites
-
-- Python 3.9+
-- pip
-
-### Install & Run
+### Local Installation
 
 ```bash
+# Clone the repository
+git clone <your-repo-url>
+cd reflector-antenna-problem2
+
+# Install dependencies
 pip install -r requirements.txt
+
+# Run the app
 streamlit run app.py
 ```
 
-The app will open at `http://localhost:8501`.
+### Hugging Face Spaces
 
-### Deploy on Hugging Face Spaces
-
-This repository is configured for direct deployment on [Hugging Face Spaces](https://huggingface.co/spaces) with Streamlit SDK:
-
-1. Create a new Space (SDK: Streamlit)
-2. Push this repo
-3. The app will build and deploy automatically
+This app is configured for deployment on Hugging Face Spaces with Streamlit SDK v1.43.2. Simply push the repository to a Hugging Face Space and it will auto-deploy.
 
 ---
 
-## 📊 Sample Results (Default Parameters)
+## File Structure
 
-| Metric | ±9° Scan | ±6° Scan |
-|---|---|---|
-| Element spacing (d/λ) | ~3.13 | ~3.61 |
-| Scan loss | varies | lower |
-| Number of elements | ~469 | fewer |
-| Element count reduction | — | significant |
-
-*Exact values depend on all sidebar parameters. Run the app to see live results.*
-
----
-
-## 🧮 Design Methodology
-
-1. **Frequency Setup**: Use `f_max` for grating-lobe avoidance (shortest λ), `f_min` for directivity (longest λ), `f_center` for nominal calculations.
-
-2. **Grating-Lobe Placement**: Automatically placed just outside the scan region per established rules (θ_G = θ_sm + 1° for ≤15°, +2° for ≤45°, +5° for >60°).
-
-3. **Loss Budget**: Scan loss + taper loss + front-end loss + pointing error + implementation margin → required peak directivity.
-
-4. **Element Count**: From required D_p and achievable D_e, compute N. Generate hexagonal grid inside circular aperture.
-
-5. **Taper Weights**: Parabolic-on-pedestal amplitude distribution applied radially for sidelobe control.
-
-6. **Array Factor**: Full 2D element-by-element summation with taper weights for accurate pattern computation.
+```
+.
+├── app.py                # Main Streamlit application with all computations and plots
+├── requirements.txt      # Python dependencies
+├── .gitattributes        # Git LFS configuration
+└── README.md             # This file
+```
 
 ---
 
-## 📚 References
+## Default Parameter Values
 
-1. S. K. Rao and C. Ostroot, "Design Principles and Guidelines for Phased Array and Reflector Antennas," *IEEE Antennas & Propagation Magazine*, vol. 62, no. 2, pp. 74–81, Apr. 2020.
-
-2. S. Kotta and G. Gupta, "Phased Array Antenna Design and Analysis Tool," *IEEE Wireless Antenna and Microwave Symposium (WAMS)*, 2023.
-
-3. S. Kotta and G. Gupta, "Reflector Antennas Design and Analysis Software," *IEEE WAMS*, 2024.
-
-4. R. J. Mailloux, *Phased Array Antenna Handbook*, Artech House, 1994.
-
----
-
-## 📝 License
-
-This tool is developed for educational purposes as part of the CICAD 2025 internship programme. The design equations are from published IEEE literature.
+| Parameter | Value | Description |
+|-----------|-------|-------------|
+| D | 2.5 m | Reflector diameter |
+| f/D | 0.9 | Focal-length-to-diameter ratio |
+| F | 2.25 m | Focal length (= f/D × D) |
+| Frequency | 12 GHz | Operating frequency |
+| λ | 25 mm | Wavelength at 12 GHz |
+| D/λ | 100 | Reflector diameter in wavelengths |
+| Array | 2×2 | Number of patch elements |
+| d | 0.5λ | Element spacing (12.5 mm) |
+| η_patch | 90% | Patch antenna efficiency |
 
 ---
 
-## 👥 Acknowledgments
+## Interactive Features
 
-- **Dr. Sudhakar K. Rao** — Design equations and methodology
-- **Dr. Gaurangi Gupta** — Assignment guidance
-- **Sriya Kotta** — Original MATLAB/Python software framework
+- **Sidebar controls** allow overriding all input parameters
+- **"Run Full Analysis" button** triggers computation of all parts
+- **Multiple plots** generated: reflector sketch, feed pattern, secondary beam, efficiency curves, parametric design curves
+- **Comparison mode** automatically computes and displays 0.5λ vs 0.7λ results
 
 ---
 
-*CICAD 2025 | Submission deadline: 28 Feb 2026*
+## References
+
+1. S. K. Rao and C. Ostroot, "Design Principles and Guidelines for Phased Array and Reflector Antennas," *IEEE Antennas & Propagation Magazine*, vol. 62, no. 2, pp. 74–81, April 2020.
+
+2. S. Kotta and G. Gupta, "Reflector Antennas Design and Analysis Software," *IEEE Wireless Antenna and Microwave Symposium (WAMS)*, 2024.
+
+3. S. Kotta and G. Gupta, "Phased Array Antenna Design and Analysis Tool," *IEEE Wireless Antenna and Microwave Symposium (WAMS)*, 2023.
+
+4. S. K. Rao, L. Shafai, S. K. Sharma, *Handbook of Reflector Antennas and Feed Systems*, Volume III, Artech House, 2013.
+
+---
+
+## Author
+
+CICAD 2025 Internship Assignment — Reflector Antenna Problem-2  
+Submission Deadline: February 28, 2026
+
+---
+
+Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
