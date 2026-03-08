@@ -1,22 +1,8 @@
 """
-CICAD 2025 - Reflector Antenna Problem-2
-Center-Fed Reflector with 2x2 Patch Array Feed
-
-Given:
-  - Center-fed reflector, D = 2.5 m, f/D = 0.9
-  - Operating frequency = 12 GHz
-  - Feed: 2x2 element patch antenna array, spacing = 0.5 lambda
-  - Patch antenna efficiency = 90%
-
-Parts (a)-(f) solved with full calculations and plots.
-
-References:
-  [1] S. K. Rao, C. Ostroot, "Design Principles and Guidelines for Phased Array
-      and Reflector Antennas," IEEE AP Magazine, April 2020.
-  [2] S. Kotta, G. Gupta, "Reflector Antennas Design and Analysis Software,"
-      IEEE WAMS 2024.
-  [3] S. Kotta, G. Gupta, "Phased Array Antenna Design and Analysis Tool,"
-      IEEE WAMS 2023.
+Reflector Antenna Problem 2
+Given Parameters
+Given: Center-fed reflector, D = 2.5 m, f/D = 0.9, frequency = 12 GHz, feed: 2 × 2 patch array,
+element spacing = 0.5λ, patch efficiency = 90%.
 """
 
 import os
@@ -513,7 +499,7 @@ def plot_comparison_table(results):
 # STREAMLIT UI
 # ============================================================
 
-st.set_page_config(page_title="CICAD 2025 - Reflector Antenna Problem-2", layout="wide")
+st.set_page_config(page_title="Reflector Antenna Problem 2", layout="wide")
 
 st.markdown(
     """
@@ -547,12 +533,12 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.title("📡 CICAD 2025 — Reflector Antenna Problem-2")
-st.markdown("""
-**Center-Fed Reflector with 2×2 Patch Array Feed**
-
-*Given:* D = 2.5 m, f/D = 0.9, f = 12 GHz, 2×2 patch array feed (d = 0.5λ), η_patch = 90%
-""")
+st.title("📡 Reflector Antenna Problem 2")
+st.markdown("**Given Parameters**")
+st.markdown(
+    "Given: Center-fed reflector, D = 2.5 m, f/D = 0.9, frequency = 12 GHz, "
+    "feed: 2 × 2 patch array, element spacing = 0.5λ, patch efficiency = 90%."
+)
 
 # Sidebar for optional parameter overrides
 with st.sidebar:
@@ -567,7 +553,9 @@ with st.sidebar:
     eta_patch = st.number_input("Patch Efficiency (%)", value=90.0, min_value=1.0, max_value=100.0)
     element_type = st.selectbox("Feed Element Type", list(radiating_element_dict.keys()), index=7)
 
-if st.button("🚀 Run Full Analysis", type="primary"):
+run = st.button("🚀 Run Full Analysis", type="primary")
+
+if run:
 
     results = compute_all(D_m, f_D, freq, N_total, N_x, d_lam, eta_patch, element_type)
 
@@ -716,9 +704,4 @@ if st.button("🚀 Run Full Analysis", type="primary"):
 # FOOTER
 # ───────────────────────────────────────────────────────────────
 st.markdown("---")
-st.caption(
-   
-    "**CICAD 2025 Internship Assignment** — Reflector Antenna Problem 2"
-)
-
-
+st.caption("Reflector Antenna Problem 2")
