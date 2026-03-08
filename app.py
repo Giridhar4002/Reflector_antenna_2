@@ -515,6 +515,38 @@ def plot_comparison_table(results):
 
 st.set_page_config(page_title="CICAD 2025 - Reflector Antenna Problem-2", layout="wide")
 
+st.markdown(
+    """
+    <style>
+    html, body, [data-testid="stAppViewContainer"], .stApp {
+        background-color: #f7f7fb;
+        color: #111827;
+        font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Roboto", sans-serif;
+        font-weight: 300;
+    }
+    h1, h2, h3, h4, h5, h6 {
+        color: #111827;
+        font-weight: 500;
+    }
+    section[data-testid="stSidebar"] {
+        background-color: #ffffff;
+        color: #111827;
+    }
+    .stButton > button {
+        background-color: #111827;
+        color: #f9fafb;
+        border-radius: 999px;
+        border: none;
+    }
+    .stButton > button:hover {
+        background-color: #1f2937;
+        color: #f9fafb;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 st.title("📡 CICAD 2025 — Reflector Antenna Problem-2")
 st.markdown("""
 **Center-Fed Reflector with 2×2 Patch Array Feed**
