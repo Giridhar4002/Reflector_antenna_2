@@ -557,7 +557,7 @@ st.markdown("""
 # Sidebar for optional parameter overrides
 with st.sidebar:
     st.header("📐 Input Parameters")
-    st.markdown("*(Pre-filled with problem values)*")
+    
     D_m = st.number_input("Reflector Diameter D (m)", value=2.5, min_value=0.1)
     f_D = st.number_input("f/D ratio", value=0.9, min_value=0.1)
     freq = st.number_input("Frequency (GHz)", value=12.0, min_value=0.1)
@@ -711,10 +711,14 @@ if st.button("🚀 Run Full Analysis", type="primary"):
     """)
 
     st.divider()
-    st.markdown("""
-    ---
-    **References:**
-    1. S. K. Rao, C. Ostroot, "Design Principles and Guidelines for Phased Array and Reflector Antennas," *IEEE AP Magazine*, April 2020.
-    2. S. Kotta, G. Gupta, "Reflector Antennas Design and Analysis Software," *IEEE WAMS 2024*.
-    3. S. Kotta, G. Gupta, "Phased Array Antenna Design and Analysis Tool," *IEEE WAMS 2023*.
-    """)
+
+# ───────────────────────────────────────────────────────────────
+# FOOTER
+# ───────────────────────────────────────────────────────────────
+st.markdown("---")
+st.caption(
+   
+    "**CICAD 2025 Internship Assignment** — Reflector Antenna Problem 2"
+)
+
+
